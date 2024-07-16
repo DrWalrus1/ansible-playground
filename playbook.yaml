@@ -1,0 +1,20 @@
+- name: My first play
+  hosts: localhost
+  become: true
+  vars:
+    greeting: "Hello"
+    name: "World"
+  tasks:
+    - name: Install zsh
+      apt: name=zsh
+    - name: Change shell
+      shell: chsh -s `which zsh`
+    - name: Install ohmyzsh 
+      shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    - name: Print a greeting message
+      debug:
+        msg: "{{ greeting }} {{ name }}"
+
+# Tasks that should be added
+# 1.
+      #
