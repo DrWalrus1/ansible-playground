@@ -1,9 +1,16 @@
 - name: My first play
   hosts: localhost
   become: true
+  vars_prompt:
+    - name: git_name
+      prompt: What name will be used for git?
+      private: false
+
+    - name: git_email
+      prompt: What email will be used for git?
+      private: false
   vars:
     greeting: "Hello"
-    name: "World"
   tasks:
     - name: Install zsh
       apt: name=zsh
@@ -13,7 +20,7 @@
       shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
     - name: Print a greeting message
       debug:
-        msg: "{{ greeting }} {{ name }}"
+        msg: "{{ greeting }} {{ git_name }} {{ git_email }}"
 
 # Tasks that should be added
 # 1.
