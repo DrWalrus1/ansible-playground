@@ -1,26 +1,53 @@
 - name: My first play
   hosts: localhost
   become: true
-  vars_prompt:
-    - name: git_name
-      prompt: What name will be used for git?
-      private: false
-
-    - name: git_email
-      prompt: What email will be used for git?
-      private: false
+  # vars_prompt:
+  #   - name: git_name
+  #     prompt: What name will be used for git?
+  #     private: false
+  #
+  #   - name: git_email
+  #     prompt: What email will be used for git?
+  #     private: false
   vars:
     greeting: "Hello"
   tasks:
-    - name: Install zsh
-      apt: name=zsh
-    - name: Change shell
-      shell: chsh -s `which zsh`
-    - name: Install ohmyzsh 
-      shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    - name: Print a greeting message
-      debug:
-        msg: "{{ greeting }} {{ git_name }} {{ git_email }}"
+    - name: Setup Terminal
+      block:
+      - name: Install zsh
+        ansible.builtin.apt:
+          name: zsh
+      - name: Change shell
+        shell: chsh -s `which zsh`
+      - name: Install ohmyzsh 
+        shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      - name: Install ohmyzsh plugins
+        block:
+          - name: Install autosuggestions
+            ansible.builtin.raw: git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+          - name: Install Syntax Highlighting
+            ansible.builtin.raw: git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+    - name: Setup dotfiles
+      block:
+        - name: Install stow
+          ansible.builtin.apt:
+            name: stow
+    # - name: Print a greeting message
+    #   debug:
+    #     msg: "{{ greeting }} {{ git_name }} {{ git_email }}"
+    # TODO: Clean this up into a separate file
+    # - name: Install Golang
+    #   block:
+    #     - name: Download Golang (Mac Arm)
+    #       ansible.builtin.get_url:
+    #         url: "https://go.dev/dl/go1.22.5.darwin-arm64.pkg"
+    #         dest: "./"
+    #       when: ansible_facts['os_family'] == 'Darwin'
+    #     - name: Download Golang (Ubuntu Arm)
+    #       ansible.builtin.get_url:
+    #         url: "https://go.dev/dl/go1.22.5.linux-arm64.tar.gz"
+    #         dest: "./"
+    #       when: ansible_facts['os_family'] == 'Debian'
 
 # Tasks that should be added
 # 1.
